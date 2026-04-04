@@ -2,11 +2,13 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { createClient } from "@/lib/supabase/client";
 import {
   ArrowRight,
   BarChart3,
   FileText,
   Globe,
+  Loader2,
   Sparkles,
 } from "lucide-react";
 import Link from "next/link";
@@ -17,6 +19,39 @@ export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  async function handleEmailLogin(e: React.FormEvent) {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
+
+    const supabase = createClient();
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (error) {
+      setError(error.message);
+      setLoading(false);
+      return;
+    }
+
+    router.push("/dashboard");
+    router.refresh();
+  }
+
+  async function handleGoogleLogin() {
+    const supabase = createClient();
+    await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback`,
+      },
+    });
+  }
 
   return (
     <div className="min-h-screen flex">
@@ -81,13 +116,13 @@ export default function LoginPage() {
             </p>
           </div>
 
-          <form
-            className="space-y-4"
-            onSubmit={(e) => {
-              e.preventDefault();
-              router.push("/dashboard");
-            }}
-          >
+          {error && (
+            <div className="p-3 bg-red-50 border border-red-200 rounded-[var(--radius-md)] text-sm text-red-700">
+              {error}
+            </div>
+          )}
+
+          <form className="space-y-4" onSubmit={handleEmailLogin}>
             <Input
               id="email"
               label="Email"
@@ -95,6 +130,7 @@ export default function LoginPage() {
               placeholder="you@agency.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              required
             />
             <Input
               id="password"
@@ -103,10 +139,17 @@ export default function LoginPage() {
               placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              required
             />
 
-            <Button type="submit" className="w-full" size="lg">
-              Sign in <ArrowRight size={16} />
+            <Button type="submit" className="w-full" size="lg" disabled={loading}>
+              {loading ? (
+                <Loader2 size={16} className="animate-spin" />
+              ) : (
+                <>
+                  Sign in <ArrowRight size={16} />
+                </>
+              )}
             </Button>
           </form>
 
@@ -121,7 +164,12 @@ export default function LoginPage() {
             </div>
           </div>
 
-          <Button variant="secondary" className="w-full" size="lg" onClick={() => router.push("/dashboard")}>
+          <Button
+            variant="secondary"
+            className="w-full"
+            size="lg"
+            onClick={handleGoogleLogin}
+          >
             <svg className="w-5 h-5" viewBox="0 0 24 24">
               <path
                 d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"

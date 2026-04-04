@@ -2,7 +2,8 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ArrowRight, Globe } from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
+import { ArrowRight, Globe, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -12,6 +13,66 @@ export default function SignupPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
+
+  async function handleSignup(e: React.FormEvent) {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
+
+    const supabase = createClient();
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: { full_name: name },
+        emailRedirectTo: `${window.location.origin}/auth/callback`,
+      },
+    });
+
+    if (error) {
+      setError(error.message);
+      setLoading(false);
+      return;
+    }
+
+    setSuccess(true);
+    setLoading(false);
+  }
+
+  async function handleGoogleSignup() {
+    const supabase = createClient();
+    await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback`,
+      },
+    });
+  }
+
+  if (success) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-8 bg-surface-50">
+        <div className="w-full max-w-sm text-center space-y-4">
+          <div className="w-14 h-14 bg-emerald-50 rounded-full flex items-center justify-center mx-auto">
+            <svg className="w-7 h-7 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
+          <h1 className="text-2xl font-bold text-surface-900">Check your email</h1>
+          <p className="text-surface-500 text-sm">
+            We sent a confirmation link to <strong>{email}</strong>.
+            Click it to activate your account.
+          </p>
+          <Link href="/login" className="text-brand-600 text-sm font-medium hover:text-brand-700">
+            Back to sign in
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center p-8 bg-surface-50">
@@ -32,13 +93,13 @@ export default function SignupPage() {
           </p>
         </div>
 
-        <form
-          className="space-y-4"
-          onSubmit={(e) => {
-            e.preventDefault();
-            router.push("/dashboard");
-          }}
-        >
+        {error && (
+          <div className="p-3 bg-red-50 border border-red-200 rounded-[var(--radius-md)] text-sm text-red-700">
+            {error}
+          </div>
+        )}
+
+        <form className="space-y-4" onSubmit={handleSignup}>
           <Input
             id="name"
             label="Full name"
@@ -46,6 +107,7 @@ export default function SignupPage() {
             placeholder="Jane Developer"
             value={name}
             onChange={(e) => setName(e.target.value)}
+            required
           />
           <Input
             id="email"
@@ -54,6 +116,7 @@ export default function SignupPage() {
             placeholder="you@agency.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            required
           />
           <Input
             id="password"
@@ -62,14 +125,27 @@ export default function SignupPage() {
             placeholder="8+ characters"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            required
+            minLength={8}
           />
 
-          <Button type="submit" className="w-full" size="lg">
-            Create account <ArrowRight size={16} />
+          <Button type="submit" className="w-full" size="lg" disabled={loading}>
+            {loading ? (
+              <Loader2 size={16} className="animate-spin" />
+            ) : (
+              <>
+                Create account <ArrowRight size={16} />
+              </>
+            )}
           </Button>
         </form>
 
-        <Button variant="secondary" className="w-full" size="lg" onClick={() => router.push("/dashboard")}>
+        <Button
+          variant="secondary"
+          className="w-full"
+          size="lg"
+          onClick={handleGoogleSignup}
+        >
           <svg className="w-5 h-5" viewBox="0 0 24 24">
             <path
               d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"
