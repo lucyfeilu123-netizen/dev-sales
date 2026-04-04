@@ -1,0 +1,51 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: "DM Sans", system-ui, sans-serif;
+  --font-body: "Inter", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+
+  --color-brand-50: #f0f4ff;
+  --color-brand-100: #dbe4ff;
+  --color-brand-200: #bac8ff;
+  --color-brand-300: #91a7ff;
+  --color-brand-400: #748ffc;
+  --color-brand-500: #5c7cfa;
+  --color-brand-600: #4c6ef5;
+  --color-brand-700: #4263eb;
+  --color-brand-800: #3b5bdb;
+  --color-brand-900: #364fc7;
+
+  --color-surface-0: #ffffff;
+  --color-surface-50: #f8f9fb;
+  --color-surface-100: #f1f3f5;
+  --color-surface-200: #e9ecef;
+  --color-surface-300: #dee2e6;
+  --color-surface-400: #ced4da;
+  --color-surface-500: #adb5bd;
+  --color-surface-600: #868e96;
+  --color-surface-700: #495057;
+  --color-surface-800: #343a40;
+  --color-surface-900: #212529;
+
+  --color-success: #22c55e;
+  --color-warning: #f59e0b;
+  --color-danger: #ef4444;
+  --color-info: #3b82f6;
+
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+}
+
+body {
+  font-family: var(--font-body);
+  background: var(--color-surface-50);
+  color: var(--color-surface-900);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+}
