@@ -2,213 +2,95 @@
 
 import { AuthGuard } from "@/components/auth-guard";
 import { cn } from "@/lib/utils/cn";
-import {
-  BarChart3,
-  Building2,
-  ChevronLeft,
-  FileText,
-  Globe,
-  Kanban,
-  LogOut,
-  Receipt,
-  Search,
-  Settings,
-  Users,
-  Bell,
-  Plus,
-} from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 
 const navItems = [
-  { href: "/dashboard", icon: BarChart3, label: "Overview", desc: "Stats & activity" },
-  { href: "/dashboard/pipeline", icon: Kanban, label: "Pipeline", desc: "Manage deals" },
-  { href: "/dashboard/contacts", icon: Users, label: "Contacts", desc: "People & leads" },
-  { href: "/dashboard/companies", icon: Building2, label: "Companies", desc: "Organizations" },
-  { href: "/dashboard/proposals", icon: FileText, label: "Proposals", desc: "Send & track" },
-  { href: "/dashboard/invoices", icon: Receipt, label: "Invoices", desc: "Get paid" },
+  { href: "/dashboard", label: "Overview", icon: "M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0h4" },
+  { href: "/dashboard/pipeline", label: "Pipeline", icon: "M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2m0 10V7m6 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2" },
+  { href: "/dashboard/contacts", label: "Contacts", icon: "M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" },
+  { href: "/dashboard/companies", label: "Companies", icon: "M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" },
+  { href: "/dashboard/proposals", label: "Proposals", icon: "M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" },
+  { href: "/dashboard/invoices", label: "Invoices", icon: "M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" },
 ];
 
-export default function DashboardLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+function NavIcon({ d }: { d: string }) {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
+      <path d={d} />
+    </svg>
+  );
+}
+
+export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
 
   return (
     <AuthGuard>
-      <div className="min-h-screen bg-surface-50">
+      <div className="min-h-screen bg-[var(--color-canvas)]">
         {/* Sidebar */}
-        <aside
-          className={cn(
-            "fixed left-0 top-0 h-screen bg-white border-r border-border flex flex-col z-30 transition-all duration-300 ease-in-out",
-            collapsed ? "w-[68px]" : "w-64"
-          )}
-        >
+        <aside className={cn(
+          "fixed left-0 top-0 h-screen bg-[var(--color-surface)] border-r border-[var(--color-border)] flex flex-col z-30 transition-all duration-300",
+          collapsed ? "w-[52px]" : "w-56"
+        )}>
           {/* Logo */}
-          <div className="h-16 flex items-center gap-3 px-4 border-b border-border shrink-0">
-            <div className="w-9 h-9 bg-primary rounded-lg flex items-center justify-center text-primary-foreground shrink-0 shadow-sm shadow-primary/20">
-              <Globe size={18} />
-            </div>
-            {!collapsed && (
-              <div className="flex items-center justify-between flex-1">
-                <span className="font-bold text-foreground tracking-tight text-lg">
-                  DevSales
-                </span>
-                <span className="text-[10px] font-medium text-primary bg-primary/10 px-1.5 py-0.5 rounded">
-                  PRO
-                </span>
-              </div>
-            )}
+          <div className="h-12 flex items-center px-4 border-b border-[var(--color-border)] shrink-0">
+            {!collapsed && <span className="text-[14px] font-semibold text-[var(--color-ink)] tracking-tight">DevSales</span>}
+            {collapsed && <span className="text-[14px] font-semibold text-[var(--color-ink)]">D</span>}
           </div>
 
-          {/* Quick action */}
-          {!collapsed && (
-            <div className="px-3 pt-4 pb-2">
-              <button className="w-full flex items-center gap-2 px-3 py-2 rounded-lg border border-dashed border-border text-sm text-muted-foreground hover:border-primary/40 hover:text-primary hover:bg-primary/5 transition-all cursor-pointer">
-                <Plus size={14} />
-                New Deal
-              </button>
-            </div>
-          )}
-
-          {/* Nav section label */}
-          {!collapsed && (
-            <div className="px-5 pt-4 pb-1">
-              <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/60">
-                Menu
-              </span>
-            </div>
-          )}
-
-          {/* Nav links */}
-          <nav className="flex-1 py-1 px-2.5 space-y-0.5 overflow-y-auto">
-            {navItems.map(({ href, icon: Icon, label, desc }) => {
-              const active =
-                href === "/dashboard"
-                  ? pathname === "/dashboard"
-                  : pathname.startsWith(href);
+          {/* Nav */}
+          <nav className="flex-1 py-2 px-2 space-y-px overflow-y-auto">
+            {navItems.map(({ href, label, icon }) => {
+              const active = href === "/dashboard" ? pathname === "/dashboard" : pathname.startsWith(href);
               return (
                 <Link
                   key={href}
                   href={href}
                   className={cn(
-                    "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all group",
+                    "flex items-center gap-2.5 px-2.5 py-[7px] rounded-[var(--radius-sm)] text-[13px] transition-colors",
                     active
-                      ? "bg-primary/10 text-primary font-medium shadow-sm"
-                      : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                      ? "bg-[var(--color-muted)] text-[var(--color-ink)] font-medium"
+                      : "text-[var(--color-ink-secondary)] hover:bg-[var(--color-muted)] hover:text-[var(--color-ink)]"
                   )}
                   title={collapsed ? label : undefined}
                 >
-                  <Icon
-                    size={18}
-                    className={cn(
-                      "shrink-0 transition-colors",
-                      active ? "text-primary" : "text-muted-foreground group-hover:text-foreground"
-                    )}
-                  />
-                  {!collapsed && (
-                    <div className="flex-1 min-w-0">
-                      <span className="block">{label}</span>
-                      {!active && (
-                        <span className="block text-[11px] text-muted-foreground/60 truncate">
-                          {desc}
-                        </span>
-                      )}
-                    </div>
-                  )}
-                  {active && !collapsed && (
-                    <div className="w-1.5 h-1.5 rounded-full bg-primary" />
-                  )}
+                  <NavIcon d={icon} />
+                  {!collapsed && label}
                 </Link>
               );
             })}
           </nav>
 
-          {/* Bottom section */}
-          <div className="p-2.5 border-t border-border space-y-0.5">
+          {/* Bottom */}
+          <div className="p-2 border-t border-[var(--color-border)] space-y-px">
             <Link
               href="/dashboard/settings"
               className={cn(
-                "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all",
+                "flex items-center gap-2.5 px-2.5 py-[7px] rounded-[var(--radius-sm)] text-[13px] transition-colors",
                 pathname.startsWith("/dashboard/settings")
-                  ? "bg-primary/10 text-primary font-medium"
-                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                  ? "bg-[var(--color-muted)] text-[var(--color-ink)] font-medium"
+                  : "text-[var(--color-ink-secondary)] hover:bg-[var(--color-muted)] hover:text-[var(--color-ink)]"
               )}
-              title={collapsed ? "Settings" : undefined}
             >
-              <Settings size={18} className="shrink-0" />
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.573-1.066z" /><circle cx="12" cy="12" r="3" /></svg>
               {!collapsed && "Settings"}
             </Link>
-
             <button
               onClick={() => setCollapsed(!collapsed)}
-              className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-all w-full cursor-pointer"
+              className="flex items-center gap-2.5 px-2.5 py-[7px] rounded-[var(--radius-sm)] text-[13px] text-[var(--color-ink-tertiary)] hover:bg-[var(--color-muted)] hover:text-[var(--color-ink-secondary)] transition-colors w-full cursor-pointer"
             >
-              <ChevronLeft
-                size={18}
-                className={cn(
-                  "shrink-0 transition-transform duration-300",
-                  collapsed && "rotate-180"
-                )}
-              />
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={cn("transition-transform duration-300", collapsed && "rotate-180")}><path d="M15 19l-7-7 7-7" /></svg>
               {!collapsed && "Collapse"}
             </button>
           </div>
-
-          {/* User card */}
-          {!collapsed && (
-            <div className="p-3 border-t border-border">
-              <div className="flex items-center gap-3 px-2 py-1.5">
-                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-brand-400 flex items-center justify-center text-white text-xs font-semibold shrink-0">
-                  LF
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-foreground truncate">Lucy Fei Lu</p>
-                  <p className="text-[11px] text-muted-foreground truncate">lucyfeilu@outlook.com</p>
-                </div>
-              </div>
-            </div>
-          )}
         </aside>
 
-        {/* Main content */}
-        <main
-          className={cn(
-            "transition-all duration-300 ease-in-out",
-            collapsed ? "ml-[68px]" : "ml-64"
-          )}
-        >
-          {/* Top bar */}
-          <div className="sticky top-0 z-20 h-16 bg-white/80 backdrop-blur-lg border-b border-border flex items-center justify-between px-6">
-            <div className="flex items-center gap-3">
-              <div className="relative">
-                <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                <input
-                  type="text"
-                  placeholder="Search deals, contacts..."
-                  className="w-64 pl-9 pr-3 py-2 text-sm bg-muted/50 border-0 rounded-lg placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:bg-white transition-all"
-                />
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <button className="relative p-2 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-colors cursor-pointer">
-                <Bell size={18} />
-                <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-primary rounded-full" />
-              </button>
-              <Link
-                href="/dashboard/pipeline"
-                className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-sm shadow-primary/20 hover:bg-primary/90 transition-colors"
-              >
-                <Plus size={14} /> New Deal
-              </Link>
-            </div>
-          </div>
-
-          <div className="max-w-7xl mx-auto p-6 lg:p-8">{children}</div>
+        {/* Main */}
+        <main className={cn("transition-all duration-300", collapsed ? "ml-[52px]" : "ml-56")}>
+          <div className="max-w-5xl mx-auto px-6 py-8 lg:px-8">{children}</div>
         </main>
       </div>
     </AuthGuard>
