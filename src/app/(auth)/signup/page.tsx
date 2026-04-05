@@ -23,12 +23,11 @@ export default function SignupPage() {
     setLoading(true);
 
     const supabase = createClient();
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
         data: { full_name: name },
-        emailRedirectTo: `${window.location.origin}/auth/callback`,
       },
     });
 
@@ -38,6 +37,26 @@ export default function SignupPage() {
       return;
     }
 
+    // If session exists (autoconfirm on), go straight to dashboard
+    if (data.session) {
+      router.push("/dashboard");
+      router.refresh();
+      return;
+    }
+
+    // Otherwise try signing in immediately (works if email confirm is off)
+    const { error: signInError } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (!signInError) {
+      router.push("/dashboard");
+      router.refresh();
+      return;
+    }
+
+    // Fallback: show email confirmation message
     setSuccess(true);
     setLoading(false);
   }
