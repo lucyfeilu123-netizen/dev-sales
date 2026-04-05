@@ -5,7 +5,28 @@
   --font-body: "Inter", system-ui, sans-serif;
   --font-mono: "JetBrains Mono", monospace;
 
-  --color-brand-50: #f0f4ff;
+  --color-background: #ffffff;
+  --color-foreground: #0a0a0a;
+  --color-muted: #f5f5f5;
+  --color-muted-foreground: #737373;
+  --color-border: #e5e5e5;
+  --color-ring: #4c6ef5;
+
+  --color-primary: #4c6ef5;
+  --color-primary-foreground: #ffffff;
+  --color-secondary: #f5f5f5;
+  --color-secondary-foreground: #171717;
+  --color-accent: #f5f5f5;
+  --color-accent-foreground: #171717;
+  --color-destructive: #ef4444;
+  --color-destructive-foreground: #ffffff;
+
+  --color-card: #ffffff;
+  --color-card-foreground: #0a0a0a;
+  --color-popover: #ffffff;
+  --color-popover-foreground: #0a0a0a;
+
+  --color-brand-50: #eef2ff;
   --color-brand-100: #dbe4ff;
   --color-brand-200: #bac8ff;
   --color-brand-300: #91a7ff;
@@ -17,16 +38,16 @@
   --color-brand-900: #364fc7;
 
   --color-surface-0: #ffffff;
-  --color-surface-50: #f8f9fb;
-  --color-surface-100: #f1f3f5;
-  --color-surface-200: #e9ecef;
-  --color-surface-300: #dee2e6;
-  --color-surface-400: #ced4da;
-  --color-surface-500: #adb5bd;
-  --color-surface-600: #868e96;
-  --color-surface-700: #495057;
-  --color-surface-800: #343a40;
-  --color-surface-900: #212529;
+  --color-surface-50: #fafafa;
+  --color-surface-100: #f5f5f5;
+  --color-surface-200: #e5e5e5;
+  --color-surface-300: #d4d4d4;
+  --color-surface-400: #a3a3a3;
+  --color-surface-500: #737373;
+  --color-surface-600: #525252;
+  --color-surface-700: #404040;
+  --color-surface-800: #262626;
+  --color-surface-900: #171717;
 
   --color-success: #22c55e;
   --color-warning: #f59e0b;
@@ -39,13 +60,51 @@
   --radius-xl: 16px;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   font-family: var(--font-body);
-  background: var(--color-surface-50);
-  color: var(--color-surface-900);
+  background: var(--color-background);
+  color: var(--color-foreground);
   -webkit-font-smoothing: antialiased;
 }
 
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-display);
+}
+
+/* Animated gradient glow — shadcn hero style */
+.hero-glow {
+  position: absolute;
+  background: hsl(230 80% 65% / 0%);
+  border-radius: 24px;
+  rotate: 35deg;
+  z-index: 0;
+  width: 260px;
+  top: 200px;
+  height: 400px;
+  filter: blur(150px);
+  will-change: transform;
+  animation: glow-slide infinite 4s linear alternate;
+}
+
+@keyframes glow-slide {
+  from {
+    background: hsl(230 80% 65% / 20%);
+    right: 460px;
+  }
+  to {
+    background: hsl(230 80% 65% / 60%);
+    right: 160px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .hero-glow { top: 70px; }
+  @keyframes glow-slide {
+    from { background: hsl(230 80% 65% / 20%); right: 300px; }
+    to { background: hsl(230 80% 65% / 40%); right: 100px; }
+  }
 }
