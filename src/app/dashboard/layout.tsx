@@ -1,5 +1,6 @@
 "use client";
 
+import { AuthGuard } from "@/components/auth-guard";
 import { cn } from "@/lib/utils/cn";
 import {
   BarChart3,
@@ -38,6 +39,7 @@ export default function DashboardLayout({
   const [collapsed, setCollapsed] = useState(false);
 
   return (
+    <AuthGuard>
     <div className="min-h-screen flex bg-surface-50">
       {/* Sidebar */}
       <aside
@@ -133,5 +135,6 @@ export default function DashboardLayout({
         <div className="max-w-7xl mx-auto p-6 lg:p-8">{children}</div>
       </main>
     </div>
+    </AuthGuard>
   );
 }
