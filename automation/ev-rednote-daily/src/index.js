@@ -1,34 +1,17 @@
-const { GoogleGenerativeAI } = require('@google/generative-ai');
+const Groq = require('groq-sdk');
 const nodemailer = require('nodemailer');
 
-const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-
-async function generateWithRetry(model, prompt, retries = 5) {
-  for (let i = 0; i < retries; i++) {
-    try {
-      const result = await model.generateContent(prompt);
-      return result.response.text();
-    } catch (err) {
-      if (i < retries - 1) {
-        const waitSec = 90;
-        console.log('API error on attempt ' + (i + 1) + '/' + retries + '. Waiting ' + waitSec + 's before retry...');
-        console.log('Error:', err.message || String(err));
-        await sleep(waitSec * 1000);
-      } else {
-        throw err;
-      }
-    }
-  }
-}
-
 async function generateRednoteDrafts() {
-  const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-  const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+  const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
   const prompt = 'Generate 5 engaging Xiaohongshu (Rednote) post drafts for an EV car technician content creator in San Francisco. Each post should: have a catchy title with emojis, be written in a mix of Chinese and English (Chinglish style), be 100-150 words, include 5-8 hashtags, cover topics like EV repair tips, life in SF, behind-the-scenes at the shop, or funny work stories. Sound authentic and relatable to young Chinese-speaking audiences. Number each post 1 through 5 with the title on the first line.';
 
-  console.log('Generating Rednote drafts with Gemini...');
-  const drafts = await generateWithRetry(model, prompt);
+  console.log('Generating Rednote drafts with Groq...');
+  const completion = await groq.chat.completions.create({
+    messages: [{ role: 'user', content: prompt }],
+    model: 'llama-3.3-70b-versatile',
+  });
+  const drafts = completion.choices[0].message.content;
   console.log('Drafts generated!');
 
   const transporter = nodemailer.createTransport({
