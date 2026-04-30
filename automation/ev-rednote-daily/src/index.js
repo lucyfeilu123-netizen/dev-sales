@@ -1,8 +1,36 @@
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 const nodemailer = require('nodemailer');
 
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+async function generateWithRetry(model, prompt, retries = 5) {
+  for (let i = 0; i < retries; i++) {
+    try {
+      const result = await model.generateContent(prompt);
+      return result.response.text();
+    } catch (err) {
+      const status = err?.status || err?.statusCode;
+      if (status === 429 && i < retries - 1) {
+        // Parse retryDelay from error details (e.g. '27s' -> 27000ms)
+        let waitMs = 60000; // default 60s
+        try {
+          const details = err?.errorDetails || [];
+          const retryInfo = details.find((d) => d['@type']?.includes('RetryInfo'));
+          if (retryInfo?.retryDelay) {
+            const secs = parseInt(retryInfo.retryDelay.replace('s', ''), 10);
+            waitMs = (secs + 5) * 1000; // add 5s buffer
+          }
+        } catch (_) {}
+        console.log(`⏳ Rate limited. Waiting ${waitMs / 1000}s before retry ${i + 1}/${retries - 1}...`);
+        await sleep(waitMs);
+      } else {
+        throw err;
+      }
+    }
+  }
+}
+
 async function generateRednoteDrafts() {
-  // Initialize Gemini
   const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
   const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
 
@@ -19,11 +47,9 @@ Each post should:
 Format each post clearly numbered 1 through 5, with the title on the first line.`;
 
   console.log('🤖 Generating Rednote drafts with Gemini...');
-  const result = await model.generateContent(prompt);
-  const drafts = result.response.text();
+  const drafts = await generateWithRetry(model, prompt);
   console.log('✅ Drafts generated!');
 
-  // Send via Gmail
   const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
