@@ -1,0 +1,32 @@
+name: Daily Rednote Drafts
+
+on:
+  schedule:
+    - cron: '0 9 * * *'  # Every day at 9 AM UTC (2 AM PDT)
+  workflow_dispatch:      # Allow manual trigger
+
+jobs:
+  generate-and-email:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        working-directory: automation/ev-rednote-daily
+        run: npm install
+
+      - name: Run Rednote draft generator
+        working-directory: automation/ev-rednote-daily
+        run: node src/index.js
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GMAIL_USER: ${{ secrets.GMAIL_USER }}
+          GMAIL_PASS: ${{ secrets.GMAIL_PASS }}
+          RECIPIENT_EMAIL: ${{ secrets.RECIPIENT_EMAIL }}
