@@ -2,8 +2,8 @@ name: Daily Rednote Drafts
 
 on:
   schedule:
-    - cron: '0 9 * * *'  # Every day at 9 AM UTC (2 AM PDT)
-  workflow_dispatch:      # Allow manual trigger
+    - cron: '30 14 * * *'  # Every day at 7:30 AM PDT (2:30 PM UTC)
+  workflow_dispatch:       # Allow manual trigger
 
 jobs:
   generate-and-email:
